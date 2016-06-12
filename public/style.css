@@ -11,9 +11,12 @@ body {
     background:transparent;
     outline:none !important;
 }
+.app-title {
 
+    margin-bottom:10px;
+}
 #calendar {
-    width:300px;
+    max-width:330px;
 }
 
 
