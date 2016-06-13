@@ -5,13 +5,11 @@ import moment from 'moment';
 // workaround as suggested in http://momentjs.com/docs/
 require('moment/locale/de');
 
-moment.locale('de');
-
-
 var Calendar = React.createClass({
     getInitialState() {
         return {
-            month: this.props.selected.clone()
+            month: this.props.selected.clone(),
+            selected: ''
         }
     },
     previous() {
@@ -28,6 +26,13 @@ var Calendar = React.createClass({
             month: month
         });
     },
+    select(day) {
+        this.setState({
+            selected: day.date
+        });
+
+        this.forceUpdate();
+    },
     render() {
         return (<div id="calendar">
             <div className="app-title">TEAM-O</div>
@@ -38,6 +43,7 @@ var Calendar = React.createClass({
             </div>
             <DayNames />
             {this.renderWeeks()}
+            <div className="selected-day">{(typeof this.state.selected === 'object' ? this.state.selected.format('dddd DD.MM.YYYY').toString() : '')}</div>
         </div>);
     },
     renderWeeks() {
@@ -50,7 +56,7 @@ var Calendar = React.createClass({
 
 
         while(!done) {
-            weeks.push(<Week key={date.toString()} date={date.clone()} month={this.state.month} />);
+            weeks.push(<Week key={date.toString()} date={date.clone()} month={this.state.month} select={this.select} selected={this.state.selected} />);
             date.add(1, 'w');
             done = count++ > 2 && monthIndex !== date.month();
             monthIndex = date.month();
@@ -69,9 +75,6 @@ var Week = React.createClass({
             month = this.props.month,
             day;
 
-        console.log(date.month());
-        console.log(month.month());
-
         for(var i = 0; i < 7; i++) {
             day = {
                 name: date.clone().format('dd').substr(0,1),
@@ -81,7 +84,7 @@ var Week = React.createClass({
                 isToday: date.isSame(new Date(), 'day')
             };
 
-            days.push(<span className={'day' + (day.isCurrentMonth ? '' : ' different-month') + (day.isToday ? ' today' : '')} key={day.date.toString()}>{day.number}</span>);
+            days.push(<span className={'day' + (day.isCurrentMonth ? '' : ' different-month') + (day.isToday ? ' today' : '') + (day.date.isSame(this.props.selected) ? ' selected' : '')} key={day.date.toString()} onClick={this.props.select.bind(null, day)}>{day.number}</span>);
             date = date.clone();
             date.add(1, 'd');
         }

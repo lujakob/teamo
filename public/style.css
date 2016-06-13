@@ -71,6 +71,9 @@ body {
     color:#cdcdcd;
 }
 .week .day.today {
+    background-color:#E3F2FF;
+}
+.week .day.selected {
     background-color:#2875c7;
     color:white;
 }

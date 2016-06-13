@@ -23793,6 +23793,8 @@ module.exports = require('./lib/React');
 },{"./lib/React":57}],170:[function(require,module,exports){
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
@@ -23810,13 +23812,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // workaround as suggested in http://momentjs.com/docs/
 require('moment/locale/de');
 
-_moment2.default.locale('de');
-
 var Calendar = _react2.default.createClass({
     displayName: 'Calendar',
     getInitialState: function getInitialState() {
         return {
-            month: this.props.selected.clone()
+            month: this.props.selected.clone(),
+            selected: ''
         };
     },
     previous: function previous() {
@@ -23832,6 +23833,13 @@ var Calendar = _react2.default.createClass({
         this.setState({
             month: month
         });
+    },
+    select: function select(day) {
+        this.setState({
+            selected: day.date
+        });
+
+        this.forceUpdate();
     },
     render: function render() {
         return _react2.default.createElement(
@@ -23858,7 +23866,12 @@ var Calendar = _react2.default.createClass({
                 )
             ),
             _react2.default.createElement(DayNames, null),
-            this.renderWeeks()
+            this.renderWeeks(),
+            _react2.default.createElement(
+                'div',
+                { className: 'selected-day' },
+                _typeof(this.state.selected) === 'object' ? this.state.selected.format('dddd DD.MM.YYYY').toString() : ''
+            )
         );
     },
     renderWeeks: function renderWeeks() {
@@ -23871,7 +23884,7 @@ var Calendar = _react2.default.createClass({
             count = 0;
 
         while (!done) {
-            weeks.push(_react2.default.createElement(Week, { key: date.toString(), date: date.clone(), month: this.state.month }));
+            weeks.push(_react2.default.createElement(Week, { key: date.toString(), date: date.clone(), month: this.state.month, select: this.select, selected: this.state.selected }));
             date.add(1, 'w');
             done = count++ > 2 && monthIndex !== date.month();
             monthIndex = date.month();
@@ -23895,9 +23908,6 @@ var Week = _react2.default.createClass({
             month = this.props.month,
             day;
 
-        console.log(date.month());
-        console.log(month.month());
-
         for (var i = 0; i < 7; i++) {
             day = {
                 name: date.clone().format('dd').substr(0, 1),
@@ -23909,7 +23919,7 @@ var Week = _react2.default.createClass({
 
             days.push(_react2.default.createElement(
                 'span',
-                { className: 'day' + (day.isCurrentMonth ? '' : ' different-month') + (day.isToday ? ' today' : ''), key: day.date.toString() },
+                { className: 'day' + (day.isCurrentMonth ? '' : ' different-month') + (day.isToday ? ' today' : '') + (day.date.isSame(this.props.selected) ? ' selected' : ''), key: day.date.toString(), onClick: this.props.select.bind(null, day) },
                 day.number
             ));
             date = date.clone();
