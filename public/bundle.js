@@ -23816,7 +23816,7 @@ var App = _react2.default.createClass({
     displayName: 'App',
     getInitialState: function getInitialState() {
         return {
-            view: 'Calendar',
+            view: 'Events',
             startMonth: (0, _moment2.default)().startOf('day'),
             selected: ''
         };
@@ -23853,7 +23853,7 @@ var App = _react2.default.createClass({
             _react2.default.createElement(
                 'div',
                 { className: 'app-title' },
-                'TEAM-O'
+                this.state.view
             ),
             view
         );
@@ -23879,7 +23879,7 @@ var CalendarView = _react2.default.createClass({
     render: function render() {
         return _react2.default.createElement(
             'div',
-            { className: 'calendar-view' },
+            { className: 'events-view' },
             _react2.default.createElement(Calendar, { startMonth: this.props.startMonth, selected: this.props.selected, select: this.props.select }),
             _react2.default.createElement(Button, { label: 'Attend event', view: '', clickButton: this.clickButton }),
             _react2.default.createElement(Attendees, null),
@@ -24145,7 +24145,7 @@ var Button = _react2.default.createClass({
     render: function render() {
         return _react2.default.createElement(
             'button',
-            { className: 'btn', onClick: this.props.clickButton.bind(null, this.props.view) },
+            { className: 'btn btn-primary', onClick: this.props.clickButton.bind(null, this.props.view) },
             this.props.label
         );
     }

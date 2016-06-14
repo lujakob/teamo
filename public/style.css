@@ -16,8 +16,8 @@ p {
     outline:none !important;
 }
 .app-title {
-
-    margin-bottom:10px;
+    text-align:center;
+    margin:10px 0 6px;
 }
 .app-wrapper {
     max-width:330px;
@@ -86,7 +86,7 @@ p {
     color:#2875c7;
 }
 
-.btn {
+.btn-primary {
     margin-top:10px;
     border:1px solid #cdcdcd;
     padding:7px;

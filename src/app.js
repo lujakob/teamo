@@ -8,7 +8,7 @@ require('moment/locale/de');
 var App = React.createClass({
     getInitialState() {
         return {
-            view: 'Calendar',
+            view: 'Events',
             startMonth: moment().startOf('day'),
             selected: ''
         };
@@ -41,7 +41,7 @@ var App = React.createClass({
 
         return (
             <div className="app-wrapper">
-                <div className="app-title">TEAM-O</div>
+                <div className="app-title">{this.state.view}</div>
                 {view}
             </div>
         );
@@ -61,7 +61,7 @@ var CalendarView = React.createClass({
         console.log('attend')
     },
    render(){
-       return (<div className="calendar-view">
+       return (<div className="events-view">
            <Calendar startMonth={this.props.startMonth} selected={this.props.selected} select={this.props.select} />
            <Button label="Attend event" view="" clickButton={this.clickButton} />
            <Attendees />
@@ -211,7 +211,7 @@ var Chat = React.createClass({
 var Button = React.createClass({
     render(){
         return (
-            <button className="btn" onClick={this.props.clickButton.bind(null, this.props.view)}>{this.props.label}</button>
+            <button className="btn btn-primary" onClick={this.props.clickButton.bind(null, this.props.view)}>{this.props.label}</button>
         );
     }
 });
