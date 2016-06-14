@@ -31,7 +31,9 @@ p {
     text-align:center;
     line-height:30px;
 }
-
+.header .fa {
+    font-size:20px;
+}
 .header .fa-angle-left {
 }
 .header .fa-angle-right {
