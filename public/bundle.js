@@ -23812,12 +23812,87 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // workaround as suggested in http://momentjs.com/docs/
 require('moment/locale/de');
 
+var App = _react2.default.createClass({
+    displayName: 'App',
+    getInitialState: function getInitialState() {
+        return {
+            view: 'Calendar',
+            startMonth: (0, _moment2.default)().startOf('day'),
+            selected: ''
+        };
+    },
+    clickButton: function clickButton(link) {
+        if (this.state.selected === '') {
+            return false;
+        }
+        this.setState({
+            view: link
+        });
+    },
+    select: function select(day) {
+        this.setState({
+            selected: day.date
+        });
+
+        this.forceUpdate();
+    },
+    render: function render() {
+        var view;
+
+        switch (this.state.view) {
+            case 'Chat':
+                view = _react2.default.createElement(ChatView, { clickButton: this.clickButton, selected: this.state.selected });
+                break;
+            default:
+                view = _react2.default.createElement(CalendarView, { startMonth: this.state.startMonth, selected: this.state.selected, select: this.select, clickButton: this.clickButton });
+        }
+
+        return _react2.default.createElement(
+            'div',
+            { className: 'app-wrapper' },
+            _react2.default.createElement(
+                'div',
+                { className: 'app-title' },
+                'TEAM-O'
+            ),
+            view
+        );
+    }
+});
+
+var ChatView = _react2.default.createClass({
+    displayName: 'ChatView',
+    render: function render() {
+        return _react2.default.createElement(
+            'div',
+            { className: 'chat-view' },
+            _react2.default.createElement(Chat, { clickButton: this.props.clickButton, selected: this.props.selected })
+        );
+    }
+});
+
+var CalendarView = _react2.default.createClass({
+    displayName: 'CalendarView',
+    clickButton: function clickButton() {
+        console.log('attend');
+    },
+    render: function render() {
+        return _react2.default.createElement(
+            'div',
+            { className: 'calendar-view' },
+            _react2.default.createElement(Calendar, { startMonth: this.props.startMonth, selected: this.props.selected, select: this.props.select }),
+            _react2.default.createElement(Button, { label: 'Attend event', view: '', clickButton: this.clickButton }),
+            _react2.default.createElement(Attendees, null),
+            _react2.default.createElement(Button, { label: 'Chat', view: 'Chat', clickButton: this.props.clickButton })
+        );
+    }
+});
+
 var Calendar = _react2.default.createClass({
     displayName: 'Calendar',
     getInitialState: function getInitialState() {
         return {
-            month: this.props.selected.clone(),
-            selected: ''
+            month: this.props.startMonth.clone()
         };
     },
     previous: function previous() {
@@ -23834,22 +23909,10 @@ var Calendar = _react2.default.createClass({
             month: month
         });
     },
-    select: function select(day) {
-        this.setState({
-            selected: day.date
-        });
-
-        this.forceUpdate();
-    },
     render: function render() {
         return _react2.default.createElement(
             'div',
             { id: 'calendar' },
-            _react2.default.createElement(
-                'div',
-                { className: 'app-title' },
-                'TEAM-O'
-            ),
             _react2.default.createElement(
                 'div',
                 { className: 'header clearfix' },
@@ -23870,7 +23933,7 @@ var Calendar = _react2.default.createClass({
             _react2.default.createElement(
                 'div',
                 { className: 'selected-day' },
-                _typeof(this.state.selected) === 'object' ? this.state.selected.format('dddd DD.MM.YYYY').toString() : ''
+                _typeof(this.props.selected) === 'object' ? this.props.selected.format('dddd DD.MM.YYYY').toString() : ''
             )
         );
     },
@@ -23884,7 +23947,7 @@ var Calendar = _react2.default.createClass({
             count = 0;
 
         while (!done) {
-            weeks.push(_react2.default.createElement(Week, { key: date.toString(), date: date.clone(), month: this.state.month, select: this.select, selected: this.state.selected }));
+            weeks.push(_react2.default.createElement(Week, { key: date.toString(), date: date.clone(), month: this.state.month, select: this.props.select, selected: this.props.selected }));
             date.add(1, 'w');
             done = count++ > 2 && monthIndex !== date.month();
             monthIndex = date.month();
@@ -23916,7 +23979,6 @@ var Week = _react2.default.createClass({
                 isCurrentMonth: date.month() === month.month(),
                 isToday: date.isSame(new Date(), 'day')
             };
-
             days.push(_react2.default.createElement(
                 'span',
                 { className: 'day' + (day.isCurrentMonth ? '' : ' different-month') + (day.isToday ? ' today' : '') + (day.date.isSame(this.props.selected) ? ' selected' : ''), key: day.date.toString(), onClick: this.props.select.bind(null, day) },
@@ -23978,6 +24040,117 @@ var DayNames = _react2.default.createClass({
     }
 });
 
-_reactDom2.default.render(_react2.default.createElement(Calendar, { selected: (0, _moment2.default)().startOf('day') }), document.getElementById('root'));
+var Attendees = _react2.default.createClass({
+    displayName: 'Attendees',
+    render: function render() {
+        var attendees = [];
+        var attendeeData = [{ id: 1, name: 'Felix', time: '18:00' }, { id: 2, name: 'Phil', time: '18:00' }, { id: 3, name: 'Domi', time: '18:30' }];
+
+        return _react2.default.createElement(
+            'div',
+            { className: 'attendees' },
+            attendeeData.map(function (item, i) {
+                return _react2.default.createElement(
+                    'div',
+                    { className: 'attendee', key: i },
+                    item.name,
+                    _react2.default.createElement(
+                        'span',
+                        { className: 'time' },
+                        item.time
+                    )
+                );
+            })
+        );
+    }
+});
+
+var Chat = _react2.default.createClass({
+    displayName: 'Chat',
+    renderDateLabel: function renderDateLabel() {
+        // return <span>date</span>;
+        return _react2.default.createElement(
+            'span',
+            null,
+            this.props.selected.format('dddd DD.MM.YYYY')
+        );
+    },
+    render: function render() {
+        return _react2.default.createElement(
+            'div',
+            { className: 'chat' },
+            _react2.default.createElement(
+                'div',
+                { className: 'header clearfix' },
+                _react2.default.createElement(
+                    'button',
+                    { className: 'btn btn-prev', onClick: this.props.clickButton.bind(null, 'Calendar') },
+                    _react2.default.createElement('i', { className: 'fa fa-angle-left' })
+                ),
+                this.renderDateLabel()
+            ),
+            _react2.default.createElement(
+                'div',
+                { className: 'comments' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'comment' },
+                    _react2.default.createElement(
+                        'span',
+                        { className: 'name' },
+                        'Domi:'
+                    ),
+                    _react2.default.createElement(
+                        'p',
+                        null,
+                        'Hey wann gehts heut los ?'
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'comment' },
+                    _react2.default.createElement(
+                        'span',
+                        { className: 'name' },
+                        'Felix:'
+                    ),
+                    _react2.default.createElement(
+                        'p',
+                        null,
+                        'So bald wie\'s geht, ich bin heiß!'
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'comment' },
+                    _react2.default.createElement(
+                        'span',
+                        { className: 'name' },
+                        'Phil:'
+                    ),
+                    _react2.default.createElement(
+                        'p',
+                        null,
+                        'Passt ich hab den Kleinen im Rucksack!'
+                    )
+                )
+            ),
+            _react2.default.createElement(Button, { label: 'back to calendar', view: 'Calendar', clickButton: this.props.clickButton })
+        );
+    }
+});
+
+var Button = _react2.default.createClass({
+    displayName: 'Button',
+    render: function render() {
+        return _react2.default.createElement(
+            'button',
+            { className: 'btn', onClick: this.props.clickButton.bind(null, this.props.view) },
+            this.props.label
+        );
+    }
+});
+
+_reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('root'));
 
 },{"moment":28,"moment/locale/de":27,"react":169,"react-dom":31}]},{},[170]);

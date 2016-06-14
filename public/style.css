@@ -6,6 +6,10 @@ body {
     font-family:"Helvetica", sans;
 }
 
+p {
+    margin:0;
+}
+
 .btn {
     border:none;
     background:transparent;
@@ -15,7 +19,7 @@ body {
 
     margin-bottom:10px;
 }
-#calendar {
+.app-wrapper {
     max-width:330px;
 }
 
@@ -80,4 +84,46 @@ body {
 
 .week.names .day {
     color:#2875c7;
+}
+
+.btn {
+    margin-top:10px;
+    border:1px solid #cdcdcd;
+    padding:7px;
+    text-align:center;
+    width:100%;
+}
+.attendee {
+    padding:10px 10px 8px;
+    border:1px solid #cdcdcd;
+    border-bottom:none;
+}
+.attendee .time {
+    display:block;
+    float:right;
+}
+.attendee:last-child {
+    border-bottom:1px solid #cdcdcd;
+}
+.attendees {
+    margin-top:10px;
+}
+
+.comments {
+    margin-top:10px;
+}
+
+.comment {
+    border:1px solid #cdcdcd;
+    padding:7px 10px;
+    border-radius:5px;
+    margin-bottom:5px;
+}
+.comment:last-child {
+    margin-bottom: 0;
+}
+
+.selected-day {
+    padding-top:10px;
+    text-align:center;
 }
