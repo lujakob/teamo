@@ -4,13 +4,15 @@ import moment from 'moment';
 
 // workaround as suggested in http://momentjs.com/docs/
 require('moment/locale/de');
+var request = require('superagent');
 
 var App = React.createClass({
     getInitialState() {
         return {
             view: 'Events',
             startMonth: moment().startOf('day'),
-            selected: ''
+            selected: '',
+            users: []
         };
     },
     clickButton(link) {
@@ -22,11 +24,25 @@ var App = React.createClass({
         });
     },
     select(day) {
-        this.setState({
-            selected: day.date
-        });
+        var that = this;
+        request
+            .get('/api/events/' + day.date.format('YYYY-MM-DD'))
+            .set('Accept', 'application/json')
+            .end(function(err, res){
+                if(res) {
+                    var event = JSON.parse(res.text).events;
+                    if(!!event) {
+                        that.setState({
+                            selected: day.date,
+                            users: event.users
+                        });
+                        that.forceUpdate();
+                    }
+                }
+            });
 
-        this.forceUpdate();
+
+
     },
     render() {
         var view;
@@ -36,7 +52,8 @@ var App = React.createClass({
                 view = <ChatView clickButton={this.clickButton} selected={this.state.selected} />;
                 break;
             default:
-                view = <CalendarView startMonth={this.state.startMonth} selected={this.state.selected} select={this.select} clickButton={this.clickButton} />
+                console.log(this.state.users)
+                view = <CalendarView startMonth={this.state.startMonth} selected={this.state.selected} users={this.state.users} select={this.select} clickButton={this.clickButton} />
         }
 
         return (
@@ -64,7 +81,7 @@ var CalendarView = React.createClass({
        return (<div className="events-view">
            <Calendar startMonth={this.props.startMonth} selected={this.props.selected} select={this.props.select} />
            <Button label="Attend event" view="" clickButton={this.clickButton} />
-           <Attendees />
+           <Attendees users={this.props.users} />
            <Button label="Chat" view="Chat" clickButton={this.props.clickButton} />
        </div>);
    }
@@ -165,12 +182,13 @@ var DayNames = React.createClass({
 
 var Attendees = React.createClass({
     render() {
-        var attendees = [];
-        var attendeeData = [{id: 1, name: 'Felix', time: '18:00'}, {id: 2, name: 'Phil', time: '18:00'}, {id: 3, name: 'Domi', time: '18:30'}];
+        var attendees = this.props.users;
+        console.log("attendees", attendees)
+        // var attendeeData = [{id: 1, name: 'Felix', time: '18:00'}, {id: 2, name: 'Phil', time: '18:00'}, {id: 3, name: 'Domi', time: '18:30'}];
 
         return (<div className="attendees">
-            {attendeeData.map((item, i) =>
-                <div className="attendee" key={i}>{item.name}<span className="time">{item.time}</span></div>
+            {attendees.map((item, i) =>
+                <div className="attendee" key={i}>{item.facebook.name}<span className="time">--</span></div>
             )}
         </div>);
     }
@@ -215,5 +233,7 @@ var Button = React.createClass({
         );
     }
 });
+
+//module.exports.App = App;
 
 ReactDOM.render(<App /> , document.getElementById('root'));
